@@ -485,8 +485,17 @@ int SDBlockDevice::_read(uint8_t *buffer, uint32_t length) {
     while (_spi.write(0xFF) != 0xFE);
 
     // read data
-    for (uint32_t i = 0; i < length; i++) {
-        buffer[i] = _spi.write(0xFF);
+    for (uint32_t i = 0; i < length; i++)
+    {
+        //buffer[i] = _spi.write(0xFF);
+        SPI1->DR = 0xFF; // write data to be transmitted to the SPI data register
+        //while (!(SPI1->SR & SPI_FLAG_TXE))
+        //    ; // wait until transmit complete
+        while (!(SPI1->SR & SPI_FLAG_RXNE))
+            ; // wait until receive complete
+        while (SPI1->SR & SPI_FLAG_BSY)
+            ;                 // wait until SPI is not busy anymore
+        buffer[i] = SPI1->DR; // return received data from SPI data register
     }
     _spi.write(0xFF); // checksum
     _spi.write(0xFF);
