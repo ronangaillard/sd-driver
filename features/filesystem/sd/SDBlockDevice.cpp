@@ -529,8 +529,7 @@ int SDBlockDevice::_read(uint8_t *buffer, uint32_t length)
         SPI1->DR = 0xFF; // write data to be transmitted to the SPI data register
         //while (!(SPI1->SR & SPI_FLAG_TXE))
         //    ; // wait until transmit complete
-        if (i % 128 == 0)
-            screen.diplayNextBufferLine();
+        
 
         while (!(SPI1->SR & SPI_FLAG_RXNE))
             ; // wait until receive complete
